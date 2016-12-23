@@ -6,13 +6,17 @@ from .models import Appointment
 from ..user_dashboard_app.models import User
 # Create your views here.
 def index(request):
-    appointments_today = Appointment.objects.filter(date=datetime.date.today()).order_by('Time')
-    future_appointments = Appointment.objects.filter(date__gt=datetime.date.today()).order_by('date')
-    context = {
-        'appointments_today': appointments_today,
-        'future_appointments': future_appointments,
-    }
-    return render(request, 'appointments_app/appointments.html', context)
+    if request.session.get('user'):
+        user =  User.objects.get(id=request.session['user']['id'])
+        appointments_today = Appointment.objects.filter(date=datetime.date.today()).filter(user=user).order_by('Time')
+        future_appointments = Appointment.objects.filter(date__gt=datetime.date.today()).filter(user=user).order_by('date')
+        context = {
+            'appointments_today': appointments_today,
+            'future_appointments': future_appointments,
+        }
+        return render(request, 'appointments_app/appointments.html', context)
+    else:
+        return render(request, 'appointments_app/appointments.html')
 def add_appointment(request):
     if request.session.get('user'):
         user =  User.objects.get(id=request.session['user']['id'])
