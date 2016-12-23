@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+import datetime
 import re, bcrypt
 #
 # from ..auth_app.models import User
@@ -8,6 +9,10 @@ import re, bcrypt
 class UserManager(models.Manager):
     def validate_user_fields(self, data):
         errors = []
+        try:
+            date_converted = datetime.datetime.strptime(data['date_of_birth'],"%m/%d/%Y").date()
+        except ValueError:
+            errors.append(['date_of_birth', 'Please enter valid date format mm/dd/yyyy'])
         if len(data['first_name']) < 2:
             errors.append(['first_name', 'Please enter a valid first name'])
         elif not re.search(r'^[a-zA-Z\s-]+$',data['first_name']):
@@ -51,10 +56,10 @@ class UserManager(models.Manager):
     def delete_all(self):
         User.objects.all().delete()
 
-
 class User(models.Model):
     first_name = models.CharField(max_length=45, blank=True, null=True)
     last_name = models.CharField(max_length=45, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
     email = models.CharField(max_length=60, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

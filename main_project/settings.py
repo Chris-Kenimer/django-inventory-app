@@ -24,13 +24,14 @@ SECRET_KEY = 'nia8%iz%(%&9=c7!y_!bu^hjd6cjp82%$k$e6eaac2*3@fvdmh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'apps.appointments_app',
     'apps.user_dashboard_app',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.sessions.models import Session
 from .models import User
 # from ..book_reviews.models import Review, Book
+import datetime
 import re, bcrypt
 # User.objects.create(first_name='Chris', last_name='Kenimer', email='ckenimer@hotmail.com')
 # Create your views here.
@@ -21,17 +22,16 @@ def login_user(request):
                 messages.warning(request, error)
 
                 return redirect('/')
-    return redirect('/')
+    return redirect('/appointments')
 def register_user(request):
     if request.POST:
+
         validate_user_fields = User.objects.validate_user_fields(request.POST)
         if validate_user_fields[0]:
-            check_for_users = User.objects.all()
             hashed_pw = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt())
-            if check_for_users:
-                new_user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], email=request.POST['email'], password=hashed_pw)
-            else:
-                new_user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], email=request.POST['email'], password=hashed_pw)
+            date_converted = datetime.datetime.strptime(request.POST['date_of_birth'],"%m/%d/%Y").date()
+            new_user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], email=request.POST['email'], password=hashed_pw, date_of_birth=date_converted)
+
             request.session['user'] = {
                 'name': new_user.first_name + ' ' + new_user.last_name,
                 'id': new_user.id,
@@ -41,7 +41,7 @@ def register_user(request):
                 messages.warning(request, error[1])
 
             return redirect('/')
-    return redirect('/')
+    return redirect('/appointments')
 def user_dashboard(request):
     users = User.objects.all()
     context = {
