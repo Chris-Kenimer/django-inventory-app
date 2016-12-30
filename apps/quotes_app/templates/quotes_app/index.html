@@ -1,0 +1,75 @@
+{% extends 'user_dashboard_app/base.html' %}
+{% block title%} What's Up {% endblock %}
+{% block body %}
+  {% if not request.session.user %}
+    <div class="alert alert-warning">
+      <p>Please sign in to see view this page <a href="/" class="btn btn-primary"> Sign-in or Register</a></p>
+    </div>
+  {% else %}
+    <h2>Hello: {{ request.session.user.name }} !</h2>
+    <div class="col-md-6">
+
+        <h5>Quoteable Quotes</h5>
+        {% for quote in quotes %}
+          <div class="well">
+            <p><span>{{ quote.quoted_by }}: </span> {{ quote.message }}</p>
+            <p>Posted By: <a href="{% url 'user_posts' id=quote.user.id %}">{{ quote.user.first_name }}</a>
+              <form class="" action="{% url 'favorite_a_quote' %}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="quote_id" value="{{ quote.id }}">
+                  <button type="submit" name="button">Add to My List</button>
+              </form>
+
+            </p>
+          </div>
+        {% endfor %}
+
+    </div>
+    <div class="col-md-6">
+
+        <h5>Your Favorites</h5>
+        {% for favorite in favorites %}
+          <div class="well">
+            <p><span>{{ favorite.quote.quoted_by }}: </span> {{ favorite.quote.message }}</p>
+            <p>Posted By: <a href="{% url 'user_posts' id=favorite.quote.user.id %}">{{ favorite.quote.user.first_name }}</a>
+              <form class="" action="{% url 'remove_favorite' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="favorite_id" value="{{ favorite.id }}">
+                <button type="submit" name="button">Remove From My List</button></p>
+              </form>
+
+          </div>
+        {% endfor %}
+      <div class="messages">
+        {% if messages %}
+          {% for message in messages %}
+            <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+              <a class="close" data-dismiss="alert" href="#">&times;</a>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="add-quote">
+        <h4>Contribute a Quote:</h4>
+        <form class="" action="{% url 'add_quote' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group ">
+            <label for="quoted_by">Quoted By:</label>
+            <input type="text" class="form-control" name="quoted_by" value="">
+          </div>
+          <div class="form-group">
+            <label for="message">Message: </label>
+            <textarea name="message" rows="4" cols="20" class="form-control"></textarea>
+            <span>(255 character limit)</span>
+          </div>
+          <button type="submit" name="button" class="btn btn-primary">Add</button>
+        </form>
+      </div>
+
+    </div>
+
+
+  {% endif %}
+
+{% endblock %}

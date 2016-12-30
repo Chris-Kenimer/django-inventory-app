@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 from .models import User
-# from ..book_reviews.models import Review, Book
+from ..quotes_app.models import Favorite, Quote
 import datetime
 import re, bcrypt
-# User.objects.create(first_name='Chris', last_name='Kenimer', email='ckenimer@hotmail.com')
+
 # Create your views here.
 def login_page(request):
     return render(request, 'user_dashboard_app/login.html')
@@ -22,7 +22,7 @@ def login_user(request):
                 messages.warning(request, error)
 
                 return redirect('/')
-    return redirect('/appointments')
+    return redirect('/quotes')
 def register_user(request):
     if request.POST:
 
@@ -41,23 +41,21 @@ def register_user(request):
                 messages.warning(request, error[1])
 
             return redirect('/')
-    return redirect('/appointments')
+    return redirect('/quotes')
 def user_dashboard(request):
     users = User.objects.all()
     context = {
         'users': users
     }
     return render(request, 'user_dashboard_app/dashboard.html', context)
-# def user_reviews(request, id):
-#     user = User.objects.get(id=id)
-#     book_reviews = Review.objects.filter(reviewer=id)
-#     print book_reviews
-#     context = {
-#
-#         'book_reviews': book_reviews,
-#         'user': user
-#     }
-#     return render(request, 'book_reviews/user_reviews.html', context)
+def user_favorites(request, id):
+    user = User.objects.get(id=id)
+    user_favorites = Quote.objects.filter(user=id)
+    context = {
+        'quotes': user_favorites,
+        'user': user,
+    }
+    return render(request, 'quotes_app/user_favorites.html', context)
 def edit_user(request, id):
     user = User.objects.get(id=id)
     context = {
@@ -98,4 +96,6 @@ def logout(request):
     return redirect('/')
 def purge_users(request):
     User.objects.delete_all()
+    Favorite.objects.all().delete()
+    Quote.objects.all().delete()
     return redirect('/dashboard')

@@ -1,0 +1,22 @@
+{% extends 'user_dashboard_app/base.html' %}
+{% block title%} What's Up {% endblock %}
+{% block body %}
+  <h4>Posts by: {{ user.first_name }}</h4>
+  <h5>Count: {{ quotes|length }}</h5>
+
+  {% for quote in quotes %}
+  <div class="row">
+
+    <div class="col-md-6">
+      <div class="well">
+        <p>  Quoted By: {{ quote.quoted_by }} </p>
+        <p> Message: {{ quote.message }} </p>
+      </div>
+    </div>
+  </div>
+
+
+  {% endfor %}
+
+
+{% endblock %}
