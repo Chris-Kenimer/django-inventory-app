@@ -50,12 +50,12 @@ def user_dashboard(request):
     return render(request, 'user_dashboard_app/dashboard.html', context)
 def user_favorites(request, id):
     user = User.objects.get(id=id)
-    user_favorites = Quote.objects.filter(user=id)
+    user_posts = Quote.objects.filter(user=id)
     context = {
-        'quotes': user_favorites,
+        'quotes': user_posts,
         'user': user,
     }
-    return render(request, 'quotes_app/user_favorites.html', context)
+    return render(request, 'quotes_app/user_posts.html', context)
 def edit_user(request, id):
     user = User.objects.get(id=id)
     context = {
